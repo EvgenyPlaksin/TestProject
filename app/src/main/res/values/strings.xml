@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">TestProject</string>
+    <string name="facebook_app_id">945189296175257</string>
+    <string name="facebook_client_token">6d184139102f8c4ec4a62f423252a6fa</string>
+
+    <string name="instructions">Unscramble the word using all the letters.</string>
+    <string name="skip">Skip</string>
+    <string name="submit">Submit</string>
+    <string name="score">Score: %d</string>
+    <string name="word_count">%d of %d words</string>
+    <string name="enter_your_word">Enter your word</string>
+    <string name="congratulations">Congratulations!</string>
+    <string name="you_scored">"You scored: %d"</string>
+    <string name="exit">Exit</string>
+    <string name="play_again">Play Again</string>
+    <string name="try_again">Try again!</string>
+    <string name="about_text">Эта игра предназначена для лёгкого обучения английскому языку. Здесь вы сможете разбирать и собирать слова, таки образом изучая иностранный язык! Если вам понравилась наша игра просим оценить её в Google Play!</string>
+    <string name="bnt_go_to_game_text">Перейти к игре!</string>
+</resources>

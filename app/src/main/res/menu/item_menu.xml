@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/settingsFragment"
+        android:icon="@drawable/menu_item1"
+        android:title="Настройки"
+        android:enabled="true"/>
+
+    <item
+        android:id="@+id/gameFragment"
+        android:icon="@drawable/menu_item2"
+        android:title="Играть"
+        android:enabled="true"/>
+
+    <item
+        android:id="@+id/aboutGameFragment"
+        android:icon="@drawable/menu_item3"
+        android:title="Об игре"
+        android:enabled="true"/>
+
+</menu>
