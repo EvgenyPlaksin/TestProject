@@ -3,35 +3,35 @@ package com.example.testproject.splashscreen
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
+import android.net.Uri
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
-import android.view.MenuItem
 import androidx.ads.identifier.AdvertisingIdClient
 import androidx.ads.identifier.AdvertisingIdInfo
-import androidx.navigation.ui.NavigationUI
-import androidx.navigation.ui.setupWithNavController
+import androidx.appcompat.app.AppCompatActivity
 import com.appsflyer.AppsFlyerConversionListener
 import com.appsflyer.AppsFlyerLib
-import com.example.testproject.*
-import com.example.testproject.game.fragments.utils.Constants
+import com.example.testproject.MainActivity
+import com.example.testproject.R
+import com.example.testproject.game.fragments.utils.Variables.url_2
+import com.example.testproject.webview.BrowserActivity
+import com.facebook.FacebookSdk.fullyInitialize
+import com.facebook.FacebookSdk.setAutoInitEnabled
 import com.facebook.applinks.AppLinkData
 import com.google.common.util.concurrent.FutureCallback
 import com.google.common.util.concurrent.Futures
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.concurrent.Executors
 
+
 class SpashActivity : AppCompatActivity() {
 
     val APPSFLYER_KEY = "EAh5oHTCYVhMvTpXN88pWQ"
-    var subAll: Array<String> = arrayOf("null","null","null","null")// using one time for facebook and appsflier
+    var subAll: Array<String> = emptyArray()// using one time for facebook and appsflier
     var adId: String? = null
+    var datalist: MutableMap<String, Any>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +42,7 @@ class SpashActivity : AppCompatActivity() {
         initFacebook()
         determineAdvertisingInfo()
         appsflyer()
+        addDummyUser(adId.toString(), afId, "6d184139102f8c4ec4a62f423252a6fa", APPSFLYER_KEY, "945189296175257")
 
         val intent = Intent(this@SpashActivity, MainActivity::class.java)
         startActivity(intent)
@@ -64,23 +65,27 @@ class SpashActivity : AppCompatActivity() {
     }
 
     fun initFacebook() {
-        Log.e("TAG", "initfaebook is called")
+        Log.e("TAG", "initfacebook is called")
+        setAutoInitEnabled(true)
+        fullyInitialize()
+
         AppLinkData.fetchDeferredAppLinkData(this) {
                 appLinkData: AppLinkData? ->
             Log.e("TAG", "Aplinkdata -> $appLinkData")
             if (appLinkData != null && appLinkData.targetUri != null) {
 
-                val FullLinkaa = appLinkData.targetUri.toString()
-                Log.e("TAG", "link -> $FullLinkaa")
-                val part1 = FullLinkaa.split("//")
+                val fullLink = appLinkData.targetUri.toString()
+                Log.e("TAG", "link -> $fullLink")
+                val part1 = fullLink.split("//")
                 val subsDEEP = part1[1].split("_")//sub1,sub2, sub3,sub4
                 subAll[0] = subsDEEP[0]
                 subAll[1] = subsDEEP[1]
                 subAll[2] = subsDEEP[2]
                 subAll[3] = subsDEEP[3]
             }
+            Log.e("TAG", "subAll -> ${subAll[0]}")
         }
-        Log.e("TAG", "subAll -> ${subAll[0]}")
+
     }
 
     private fun determineAdvertisingInfo() {
@@ -113,18 +118,10 @@ class SpashActivity : AppCompatActivity() {
             // library to perform any required ads use cases.
         }
     }
-    var adgroup = "null"
-    var afSteid = "null"
-    var affStuta = "null"
-    var origCost = "null"
-    var campaignId = "null"
-    var afId = "null"
-    var adsetId = "null"
-    var appCampaign = "null"
-    var adset = "null"
-    var source = "null"
-    var dataSeted = false
 
+    var appCampaign = "null"
+    var dataSeted = false
+    var afId = "null"
     fun appsflyer(){
         Log.e("TAG", "appsflyer is called")
         AppsFlyerLib.getInstance().init(APPSFLYER_KEY,createData(),this)
@@ -136,91 +133,67 @@ class SpashActivity : AppCompatActivity() {
         Log.e("TAG", "adId -> $adId")
         return object : AppsFlyerConversionListener {
             override fun onConversionDataSuccess(data: MutableMap<String, Any>?) {
+
+               datalist = data
+
                 data?.let {
                     for (it in data) {
-                        if (it.key == "af_status") {
-                            affStuta = it.value.toString()
-                            Log.e("TAG", "1 -> ${it.key}")
-                            Log.e("TAG", "value -> ${it.value.toString()}")
-                        }
-                        if (it.value == null) {
-                            continue
-                        }
-                        if (it.key == "media_source") {
-                            source = it.value.toString()
-                            Log.e("TAG", "2 -> ${it.key}")
-                            Log.e("TAG", "value -> ${it.value.toString()}")
-                        }
-                        if (it.key == "adgroup_id") {
-                            adId = it.value.toString()
-                            Log.e("TAG", "3 -> ${it.key}")
-                            Log.e("TAG", "value -> ${it.value.toString()}")
-                        }
-                        if (it.key == "adset_id") {
-                            adsetId = it.value.toString()
-                            Log.e("TAG", "value -> ${it.value.toString()}")
-                        }
-                        if (it.key == "campaign_id") {
-                            campaignId = it.value.toString()
-                            Log.e("TAG", "4 -> ${it.key}")
-                            Log.e("TAG", "value -> ${it.value.toString()}")
-                        }
+
                         if (it.key == "campaign") {
-                            Log.e("TAG", "5 -> ${it.key}")
                             appCampaign = it.value.toString()
-                            Log.e("TAG", "value -> ${it.value.toString()}")
+                            Log.e("TAG", "value campaign -> ${it.value}")
                             val subsNaming=appCampaign.split("_")//sub1 , sub2 , sub3 , sub4
                             subAll[0]=subsNaming[0]
                             subAll[1]=subsNaming[1]
                             subAll[2]=subsNaming[2]
                             subAll[3]=subsNaming[3]
                         }
-                        if (it.key == "adset") {
-                            adset = it.value.toString()
-                            Log.e("TAG", "6 -> ${it.key}")
-                            Log.e("TAG", "value -> ${it.value.toString()}")
-                        }
-                        if (it.key == "adgroup") {
-                            adgroup = it.value.toString()
-                            Log.e("TAG", "7 -> ${it.key}")
-                            Log.e("TAG", "value -> ${it.value.toString()}")
-                        }
-                        if (it.key == "orig_cost") {
-                            origCost = it.value.toString()
-                            Log.e("TAG", "8 -> ${it.key}")
-                            Log.e("TAG", "value -> ${it.value.toString()}")
-                        }
-                        if (it.key == "af_siteid") {
-                            afSteid = it.value.toString()
-                            Log.e("TAG", "9 -> ${it.key}")
-                            Log.e("TAG", "value -> ${it.value.toString()}")
-                        }
+
                     }
-                    Log.e("TAG", "appsflyer -> ${it["af_status"]}")
                     dataSeted = true
                 }
             }
             override fun onConversionDataFail(error: String?) {
                 Log.e("TAG", "onConversionDataFail called")
-                if (!dataSeted) {
-                    dataSeted = true
-                }
+                if (!dataSeted) dataSeted = true
             }
             override fun onAppOpenAttribution(data: MutableMap<String, String>?) {
                 Log.e("TAG", "onAppOpenAttribution called")
                 data?.map {
-                    if (!dataSeted) {
-                        dataSeted = true
-                    }
+                    if (!dataSeted) dataSeted = true
                 }
             }
             override fun onAttributionFailure(error: String?) {
                 Log.e("TAG", "onAttributionFailure called")
-                if (!dataSeted) {
-                    dataSeted = true
-                }
+                if (!dataSeted) dataSeted = true
             }
         }
+    }
+
+
+    fun addDummyUser(  google_adid: String,
+                       af_urerid: String,
+                       fb_at: String,
+                       dev_key: String,
+                       app_id: String
+//                       datalist: MutableMap<String, Any>?
+                    ) {
+        val builder: Uri.Builder = Uri.Builder()
+        builder.scheme("http")
+            .authority("185.198.165.10")
+            .appendPath("dimas")
+            .appendQueryParameter("google_adid", google_adid)
+            .appendQueryParameter("af_userid", af_urerid)
+            .appendQueryParameter("fb_at", fb_at)
+            .appendQueryParameter("dev_key", dev_key)
+            .appendQueryParameter("app_id", app_id)
+//
+//        for(attrName in datalist!!.keys){
+//            if(datalist.get(attrName) != null){
+//                builder.appendQueryParameter(attrName, datalist.get(attrName).toString())
+//            }
+//        }
+        url_2 = builder.build().toString()
     }
 
 }

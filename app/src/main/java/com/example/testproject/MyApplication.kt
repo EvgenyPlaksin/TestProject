@@ -30,10 +30,6 @@ class MyApplication : Application() {
 
         FacebookSdk.sdkInitialize(applicationContext)
         AppEventsLogger.activateApp(this)
-        FacebookSdk.setAutoInitEnabled(true)
-        FacebookSdk.fullyInitialize()
-
-
     }
 
 

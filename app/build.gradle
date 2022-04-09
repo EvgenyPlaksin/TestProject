@@ -95,12 +95,15 @@ dependencies {
     implementation ("com.facebook.android:facebook-login:latest.release")
     implementation 'com.parse.bolts:bolts-tasks:1.4.0'
     implementation 'com.parse.bolts:bolts-applinks:1.4.0'
-    implementation "com.facebook.android:facebook-android-sdk:7.1.0"
+    implementation "com.facebook.android:facebook-android-sdk:12.3.0"
     // Google Ads support
     implementation("androidx.ads:ads-identifier:1.0.0-alpha04")
     implementation("com.google.guava:guava:28.0-android")
     // AppsFlyer
     implementation "com.android.installreferrer:installreferrer:2.2"
     implementation 'com.appsflyer:af-android-sdk:6.5.4'
+
+    implementation 'com.android.volley:volley:1.2.1'
+
 
 }

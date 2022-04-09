@@ -14,4 +14,5 @@ object Variables {
     val FILECHOOSER_RESULTCODE = 1
     var url_2: String? = null
     var fileornot = false
+
 }
