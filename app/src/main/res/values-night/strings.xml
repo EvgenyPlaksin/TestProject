@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="about_text">Эта игра предназначена для лёгкого обучения английскому языку. Здесь вы сможете разбирать и собирать слова, таки образом изучая иностранный язык! Если вам понравилась наша игра просим оценить её в Google Play!</string>
+    <string name="no_internet">No Internet!</string>
 </resources>

@@ -16,4 +16,5 @@
     <string name="try_again">Try again!</string>
     <string name="about_text">Эта игра предназначена для лёгкого обучения английскому языку. Здесь вы сможете разбирать и собирать слова, таки образом изучая иностранный язык! Если вам понравилась наша игра просим оценить её в Google Play!</string>
     <string name="bnt_go_to_game_text">Перейти к игре!</string>
+    <string name="no_internet">No Internet!</string>
 </resources>
