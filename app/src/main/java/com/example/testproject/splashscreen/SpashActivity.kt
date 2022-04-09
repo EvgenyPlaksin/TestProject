@@ -66,7 +66,6 @@ class SpashActivity : AppCompatActivity() {
     fun initFacebook() {
         Log.e("TAG", "initfaebook is called")
         AppLinkData.fetchDeferredAppLinkData(this) {
-
                 appLinkData: AppLinkData? ->
             Log.e("TAG", "Aplinkdata -> $appLinkData")
             if (appLinkData != null && appLinkData.targetUri != null) {
@@ -134,31 +133,42 @@ class SpashActivity : AppCompatActivity() {
 
     fun createData(): AppsFlyerConversionListener {
         afId = AppsFlyerLib.getInstance().getAppsFlyerUID(this).toString()
-        Log.e("TAG", "id -> $adId")
+        Log.e("TAG", "adId -> $adId")
         return object : AppsFlyerConversionListener {
             override fun onConversionDataSuccess(data: MutableMap<String, Any>?) {
                 data?.let {
                     for (it in data) {
                         if (it.key == "af_status") {
                             affStuta = it.value.toString()
+                            Log.e("TAG", "1 -> ${it.key}")
+                            Log.e("TAG", "value -> ${it.value.toString()}")
                         }
                         if (it.value == null) {
                             continue
                         }
                         if (it.key == "media_source") {
                             source = it.value.toString()
+                            Log.e("TAG", "2 -> ${it.key}")
+                            Log.e("TAG", "value -> ${it.value.toString()}")
                         }
                         if (it.key == "adgroup_id") {
                             adId = it.value.toString()
+                            Log.e("TAG", "3 -> ${it.key}")
+                            Log.e("TAG", "value -> ${it.value.toString()}")
                         }
                         if (it.key == "adset_id") {
                             adsetId = it.value.toString()
+                            Log.e("TAG", "value -> ${it.value.toString()}")
                         }
                         if (it.key == "campaign_id") {
                             campaignId = it.value.toString()
+                            Log.e("TAG", "4 -> ${it.key}")
+                            Log.e("TAG", "value -> ${it.value.toString()}")
                         }
                         if (it.key == "campaign") {
+                            Log.e("TAG", "5 -> ${it.key}")
                             appCampaign = it.value.toString()
+                            Log.e("TAG", "value -> ${it.value.toString()}")
                             val subsNaming=appCampaign.split("_")//sub1 , sub2 , sub3 , sub4
                             subAll[0]=subsNaming[0]
                             subAll[1]=subsNaming[1]
@@ -167,15 +177,23 @@ class SpashActivity : AppCompatActivity() {
                         }
                         if (it.key == "adset") {
                             adset = it.value.toString()
+                            Log.e("TAG", "6 -> ${it.key}")
+                            Log.e("TAG", "value -> ${it.value.toString()}")
                         }
                         if (it.key == "adgroup") {
                             adgroup = it.value.toString()
+                            Log.e("TAG", "7 -> ${it.key}")
+                            Log.e("TAG", "value -> ${it.value.toString()}")
                         }
                         if (it.key == "orig_cost") {
                             origCost = it.value.toString()
+                            Log.e("TAG", "8 -> ${it.key}")
+                            Log.e("TAG", "value -> ${it.value.toString()}")
                         }
                         if (it.key == "af_siteid") {
                             afSteid = it.value.toString()
+                            Log.e("TAG", "9 -> ${it.key}")
+                            Log.e("TAG", "value -> ${it.value.toString()}")
                         }
                     }
                     Log.e("TAG", "appsflyer -> ${it["af_status"]}")
@@ -183,11 +201,13 @@ class SpashActivity : AppCompatActivity() {
                 }
             }
             override fun onConversionDataFail(error: String?) {
+                Log.e("TAG", "onConversionDataFail called")
                 if (!dataSeted) {
                     dataSeted = true
                 }
             }
             override fun onAppOpenAttribution(data: MutableMap<String, String>?) {
+                Log.e("TAG", "onAppOpenAttribution called")
                 data?.map {
                     if (!dataSeted) {
                         dataSeted = true
@@ -195,6 +215,7 @@ class SpashActivity : AppCompatActivity() {
                 }
             }
             override fun onAttributionFailure(error: String?) {
+                Log.e("TAG", "onAttributionFailure called")
                 if (!dataSeted) {
                     dataSeted = true
                 }
