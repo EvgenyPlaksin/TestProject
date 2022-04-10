@@ -16,9 +16,11 @@ import com.appsflyer.AppsFlyerConversionListener
 import com.appsflyer.AppsFlyerLib
 import com.example.testproject.MainActivity
 import com.example.testproject.R
+import com.example.testproject.game.fragments.utils.NetworkResult
 import com.example.testproject.game.fragments.utils.Variables.url_2
 import com.example.testproject.splashscreen.viewmodel.SplashViewModel
 import com.example.testproject.webview.BrowserActivity
+import com.example.testproject.webview.chack.ConnectionCheck
 import com.facebook.FacebookSdk.fullyInitialize
 import com.facebook.FacebookSdk.setAutoInitEnabled
 import com.facebook.applinks.AppLinkData
@@ -44,11 +46,16 @@ class SpashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_spash)
 
+        val cld = ConnectionCheck(application)
 
-        printHashKey(this)
-        initFacebook()
-        determineAdvertisingInfo()
-        appsflyer()
+        cld.observe(this) { isConnected ->
+
+            if (isConnected) {
+                printHashKey(this)
+                initFacebook()
+                determineAdvertisingInfo()
+                appsflyer()
+            }}
 
         if(lucky_status == "0" || af_status == "Organic") {
             val intent = Intent(this@SpashActivity, MainActivity::class.java)
@@ -203,15 +210,23 @@ class SpashActivity : AppCompatActivity() {
         // обязательно использовать лаунч вен стартид
         lifecycleScope.launchWhenStarted {
             viewModel.response.collect { response ->
-                lucky_status = response?.data?.luckyStatus.toString()
-                builder.scheme("http")
-                    .authority(response?.data?.luckyLink)
-                    .appendQueryParameter("google_adid", google_adid)
-                    .appendQueryParameter("af_userid", af_userid)
-                    .appendQueryParameter("fb_at", fb_at)
-                    .appendQueryParameter("dev_key", dev_key)
-                    .appendQueryParameter("app_id", app_id)
-            }}
+                when(response){
+                    is NetworkResult.Success -> {
+                        lucky_status = response?.data?.luckyStatus.toString()
+                        builder.scheme("http")
+                            .authority(response?.data?.luckyLink)
+                            .appendQueryParameter("google_adid", google_adid)
+                            .appendQueryParameter("af_userid", af_userid)
+                            .appendQueryParameter("fb_at", fb_at)
+                            .appendQueryParameter("dev_key", dev_key)
+                            .appendQueryParameter("app_id", app_id)
+                    }
+                is NetworkResult.Error -> Log.e("TAG", "GET request error")
+                is NetworkResult.Loading -> Log.e("TAG", "GET request loading")
+                }
+                    }
+                }
+
         for(attrName in datalist!!.keys){
             if(datalist.get(attrName) != null){
                 builder.appendQueryParameter(attrName, datalist.get(attrName).toString())
