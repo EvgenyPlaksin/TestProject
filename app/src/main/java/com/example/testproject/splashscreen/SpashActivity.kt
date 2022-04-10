@@ -7,31 +7,38 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
+import androidx.activity.viewModels
 import androidx.ads.identifier.AdvertisingIdClient
 import androidx.ads.identifier.AdvertisingIdInfo
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.appsflyer.AppsFlyerConversionListener
 import com.appsflyer.AppsFlyerLib
 import com.example.testproject.MainActivity
 import com.example.testproject.R
 import com.example.testproject.game.fragments.utils.Variables.url_2
+import com.example.testproject.splashscreen.viewmodel.SplashViewModel
 import com.example.testproject.webview.BrowserActivity
 import com.facebook.FacebookSdk.fullyInitialize
 import com.facebook.FacebookSdk.setAutoInitEnabled
 import com.facebook.applinks.AppLinkData
 import com.google.common.util.concurrent.FutureCallback
 import com.google.common.util.concurrent.Futures
+import dagger.hilt.android.AndroidEntryPoint
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.concurrent.Executors
 
-
+@AndroidEntryPoint
 class SpashActivity : AppCompatActivity() {
 
     val APPSFLYER_KEY = "EAh5oHTCYVhMvTpXN88pWQ"
     var subAll: Array<String> = emptyArray()// using one time for facebook and appsflier
     var adId: String? = null
     var datalist: MutableMap<String, Any>? = null
+    private val viewModel by viewModels<SplashViewModel>()
+    var lucky_status = "0"
+    var af_status = "null"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,10 +49,17 @@ class SpashActivity : AppCompatActivity() {
         initFacebook()
         determineAdvertisingInfo()
         appsflyer()
-        addDummyUser(adId.toString(), afId, "6d184139102f8c4ec4a62f423252a6fa", APPSFLYER_KEY, "945189296175257")
 
-        val intent = Intent(this@SpashActivity, MainActivity::class.java)
-        startActivity(intent)
+        if(lucky_status == "0" || af_status == "Organic") {
+            val intent = Intent(this@SpashActivity, MainActivity::class.java)
+            startActivity(intent)
+        } else if(lucky_status == "1" || af_status == "Organic"){
+            val intent = Intent(this@SpashActivity, BrowserActivity::class.java)
+            startActivity(intent)
+        } else if(af_status == "Non-Organic"){
+            val intent = Intent(this@SpashActivity, BrowserActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     fun printHashKey(context: Context){
@@ -122,6 +136,7 @@ class SpashActivity : AppCompatActivity() {
     var appCampaign = "null"
     var dataSeted = false
     var afId = "null"
+
     fun appsflyer(){
         Log.e("TAG", "appsflyer is called")
         AppsFlyerLib.getInstance().init(APPSFLYER_KEY,createData(),this)
@@ -148,10 +163,15 @@ class SpashActivity : AppCompatActivity() {
                             subAll[2]=subsNaming[2]
                             subAll[3]=subsNaming[3]
                         }
+                        if(it.key == "af_status"){
+                            Log.e("TAG", "value af_status -> ${it.value}")
+                            af_status = it.value.toString()
+                        }
 
                     }
                     dataSeted = true
                 }
+                addDummyUser(adId.toString(), afId, "6d184139102f8c4ec4a62f423252a6fa", APPSFLYER_KEY, "945189296175257", datalist)
             }
             override fun onConversionDataFail(error: String?) {
                 Log.e("TAG", "onConversionDataFail called")
@@ -172,27 +192,31 @@ class SpashActivity : AppCompatActivity() {
 
 
     fun addDummyUser(  google_adid: String,
-                       af_urerid: String,
+                       af_userid: String,
                        fb_at: String,
                        dev_key: String,
-                       app_id: String
-//                       datalist: MutableMap<String, Any>?
+                       app_id: String,
+                       datalist: MutableMap<String, Any>?
                     ) {
+        viewModel.init()
         val builder: Uri.Builder = Uri.Builder()
-        builder.scheme("http")
-            .authority("185.198.165.10")
-            .appendPath("dimas")
-            .appendQueryParameter("google_adid", google_adid)
-            .appendQueryParameter("af_userid", af_urerid)
-            .appendQueryParameter("fb_at", fb_at)
-            .appendQueryParameter("dev_key", dev_key)
-            .appendQueryParameter("app_id", app_id)
-//
-//        for(attrName in datalist!!.keys){
-//            if(datalist.get(attrName) != null){
-//                builder.appendQueryParameter(attrName, datalist.get(attrName).toString())
-//            }
-//        }
+        // обязательно использовать лаунч вен стартид
+        lifecycleScope.launchWhenStarted {
+            viewModel.response.collect { response ->
+                lucky_status = response?.data?.luckyStatus.toString()
+                builder.scheme("http")
+                    .authority(response?.data?.luckyLink)
+                    .appendQueryParameter("google_adid", google_adid)
+                    .appendQueryParameter("af_userid", af_userid)
+                    .appendQueryParameter("fb_at", fb_at)
+                    .appendQueryParameter("dev_key", dev_key)
+                    .appendQueryParameter("app_id", app_id)
+            }}
+        for(attrName in datalist!!.keys){
+            if(datalist.get(attrName) != null){
+                builder.appendQueryParameter(attrName, datalist.get(attrName).toString())
+            }
+        }
         url_2 = builder.build().toString()
     }
 

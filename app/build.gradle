@@ -4,6 +4,7 @@ plugins {
     id 'com.onesignal.androidsdk.onesignal-gradle-plugin'
     id 'kotlin-kapt'
     id 'kotlin-android-extensions'
+    id 'dagger.hilt.android.plugin'
 }
 
 android {
@@ -82,8 +83,7 @@ dependencies {
     // Hilt ViewModel extension
     implementation ("androidx.hilt:hilt-lifecycle-viewmodel:$hiltLifeCycleVersion")
     kapt ("androidx.hilt:hilt-compiler:$hiltLifeCycleVersion")
-    // Coil
-    implementation ("io.coil-kt:coil:$coilVersion")
+
     // Retrofit
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
     implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
@@ -102,8 +102,6 @@ dependencies {
     // AppsFlyer
     implementation "com.android.installreferrer:installreferrer:2.2"
     implementation 'com.appsflyer:af-android-sdk:6.5.4'
-
-    implementation 'com.android.volley:volley:1.2.1'
 
 
 }

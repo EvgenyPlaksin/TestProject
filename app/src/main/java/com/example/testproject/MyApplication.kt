@@ -11,11 +11,12 @@ import com.facebook.applinks.AppLinkData
 import com.google.common.util.concurrent.FutureCallback
 import com.google.common.util.concurrent.Futures.addCallback
 import com.onesignal.OneSignal
+import dagger.hilt.android.HiltAndroidApp
 import java.util.concurrent.Executors
 
 const val ONESIGNAL_APP_ID = "3931b998-72cb-4c30-a5b0-7e4a6366a9eb"
 
-
+@HiltAndroidApp
 class MyApplication : Application() {
 
     override fun onCreate() {
